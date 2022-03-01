@@ -1,5 +1,4 @@
 
-setwd("C:/Users/isabe/Desktop/peak-bloom-prediction-main")
 
 ############################ Installing Packages ###############################
 library(imputeTS)
@@ -211,20 +210,20 @@ liestalprec = lm(bloom_doy ~ febpre + marpre + aprpre, data = cherry_liestal)
 summary(liestalprec)
 
 ######################### Multiple Linear Regression ###########################
-m_r <- lm(bloom_doy ~ Jan_Temp + Feb_Temp + febpre + marpre + aprpre +  aprilwind, data=washingtondc)
+m_r <- lm(bloom_doy ~ Jan_Temp + Feb_Temp, data=washingtondc)
 summary(m_l_r) 
 
 
-m_l_r1 <- lm(bloom_doy ~ agdd + Jan_Temp + Feb_Temp + febpre + marpre + aprpre +  aprilwind, data=cherry_dc)
+m_l_r1 <- lm(bloom_doy ~ agdd + Jan_Temp + Feb_Temp, data=cherry_dc)
 summary(m_l_r1)
 
-m_l_r2 <- lm(bloom_doy ~ agdd + Jan_Temp + Feb_Temp + febpre + marpre + aprpre +  aprilwind, data=cherry_kyoto)
+m_l_r2 <- lm(bloom_doy ~ agdd + Jan_Temp + Feb_Temp, data=cherry_kyoto)
 summary(m_l_r2)
 
-m_l_r3 <- lm(bloom_doy ~ agdd + Jan_Temp + Feb_Temp + febpre + marpre + aprpre +  aprilwind, data=cherry_liestal)
+m_l_r3 <- lm(bloom_doy ~ agdd + Jan_Temp + Feb_Temp, data=cherry_liestal)
 summary(m_l_r3)
 
-model = lm(bloom_doy ~ Jan_Temp + Feb_Temp + febpre + marpre + aprpre +  aprilwind, data=cherry)
+model = lm(bloom_doy ~ Jan_Temp + Feb_Temp, data=cherry)
 summary(model) 
 
 # Show results of the model 
@@ -257,61 +256,3 @@ liestal_ts <- ts(liestal_ts, start=1894, end=2021, frequency=1) # Convert into t
     ggtitle("Peak Bloom Date for Cherry Trees in Liestal, 1894-2021") + 
     ylab("Bloom Date (doy)") + xlab("Year")
   theme_classic()
-  
-############################# Holt's Trend Model ###############################
-
-holt_model <- holt(washingtondc_ts, h = 10)
-summary(holt_model)
-
-
-holt_model <- holt(liestal_ts, h = 10)
-summary(holt_model)
-
-holt_model <- holt(kyoto_ts, h = 10)
-summary(holt_model)
-
-############################ Simple Moving Average #############################
-
-sm <- ma(washingtondc_ts, order=12) # 10 year moving average
-sm
-
-sm <- ma(kyoto_ts, order=10) # 12 month moving average
-summary(sm)
-lines(sm, col="red") # plot
-
-sm <- ma(liestal_ts, order=10) # 12 month moving average
-summary(sm)
-lines(sm, col="red") # plot
-
-######################### Exponential Smoothing ################################
-
-model <- hw(washingtondc_ts, initial = "optimal", h=(12), 
-            gamma=NULL)
-model
-
-############################### Arima Model ####################################
-
-acf.plot <- acf(dc_ts, lag.max = 300) # Check for Stationarity
-pacf.plot <- pacf(dc_ts) # 1 spike, p=1 (AR order)
-
-# Fit an Arima Model to the DC data
-ar.model <- Arima(dc_ts, order = c(1,2,5))
-ar.model
-
-# Forecast for the next 10 time units using Arima Model
-arima_forecast = forecast(ar.model, h = 10)
-arima_forecast
-
-############################ Auto Arima Model ##################################
-
-autoArimaFit <- auto.arima(washingtondc_ts)
-autoArimaFit
-autoArima_forecast = forecast(autoArimaFit, h = 20)
-autoArima_forecast
-plot(forecast(autoArima_forecast, h=10))
-
-autoArimaFit <- auto.arima(liestal_ts)
-autoArimaFit
-autoArima_forecast = forecast(autoArimaFit, h = 10)
-autoArima_forecast
-plot(forecast(autoArima_forecast, h=10))
